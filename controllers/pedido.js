@@ -1,5 +1,17 @@
 var ObjectID = require('mongodb').ObjectID;
 
+exports.listarPin = function (req, res) {
+   var userPin = req.params.pin;
+   console.log(userPin);
+    function callback(err, result) {
+        if (err) {
+            return res.sendStatus(503);
+        };
+        res.send(result);
+    }
+    req.db.collection('contas').findOne({"pin": Number(userPin)}, callback);
+};
+
 exports.listar = function (req, res) {
     function callback(err, result) {
         if (err) {
@@ -8,7 +20,6 @@ exports.listar = function (req, res) {
 
         res.send(result);
     }
-
     req.db.collection('contas').find().toArray(callback);
 };
 
@@ -24,12 +35,10 @@ exports.criar = function (req, res) {
 };
 
 
-//1. post com todo menu e só atualiza as quantidades e [hidden]="quantidade=0"
-//2. if ja pediram o item atualiza só a quantidade else insert o item
-exports.atualizar = function (req, res) {
+exports.pedido = function (req, res) {
   var id = req.params.id;
 
-  req.db.collection('contas').update({_id: ObjectID(id)}, { $set: req.body }, function(err, result) {
+  req.db.collection('contas').update({_id: ObjectID(id)}, { "$push": {pedidos: req.body} }, function(err, result) {
     if (err) {
       return res.sendStatus(503);
     }
@@ -38,6 +47,19 @@ exports.atualizar = function (req, res) {
   });
 };
 
-gerarPin(){
-  return Math.floor(Math.random() * 10000);
-}
+exports.atualizarQuant = function (req, res) {
+  var id = req.params.id;
+  var prod = req.params.prod;
+
+  req.db.collection('contas').update({_id: ObjectID(id), "pedidos.nome":prod}, {"$inc": { "pedidos.$.quantidade":1}}, function(err, result) {
+    if (err) {
+      return res.sendStatus(503);
+    }
+
+    res.send(result);
+  });
+};
+
+// gerarPin(){
+//   return Math.floor(Math.random() * 10000);
+// }
