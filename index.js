@@ -9,7 +9,7 @@ var stripe = require('stripe')('sk_test_tXbWRqZLz0Wg21W6emKjQ4y4'); //paste your
 var pedidoController = require('./controllers/pedido.js');
 var usuariosController = require('./controllers/usuarios.js');
 
-// inicializa o express //comentado pro socket
+// inicializa o express
 var app = express();
 var router = express.Router();//stripe
 
@@ -20,6 +20,7 @@ var router = express.Router();//stripe
 
 // inicializa o body parser
 app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false })); //stripe
 
 // inicializa mongo e expoe para o express
 app.use(expressMongoDb('mongodb://localhost:27017/contas'));
@@ -53,23 +54,23 @@ app.use(function(req, res, next) {
     next();
 });
 
-//stripe
-// router.post('/processpay', function (request, response) {
-//     var stripetoken = request.body.stripetoken;
-//     var amountpayable = request.body.amount;
-//     var charge = stripe.charge.create({
-//         amount: amountpayable,
-//         currency: 'usd',
-//         description: 'Sample transaction',
-//         source: stripetoken
-//     }, function (err, charge) {
-//         if (err)
-//             console.log(err);
-//         else
-//             response.send({ success: true });
-//     })
-// })
-// app.use(router);
+// stripe
+app.use(router.post('/processpay', function (request, response) {
+    var stripetoken = request.body.stripetoken;
+    var amountpayable = request.body.amount;
+    var charge = stripe.charge.create({
+        amount: amountpayable,
+        currency: 'usd',
+        description: 'Sample transaction',
+        source: stripetoken
+    }, function (err, charge) {
+        if (err)
+            console.log(err);
+        else
+            response.send({ success: true });
+    })
+})
+);
 
 var auth = function (req, res, next) {
   function unauthorized(res) {
