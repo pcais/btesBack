@@ -6,17 +6,16 @@ var cors = require('cors');
 var basicAuth = require('basic-auth');
 var stripe = require('stripe')('sk_test_tXbWRqZLz0Wg21W6emKjQ4y4'); //paste your test secret here
 
-var pedidoController = require('./controllers/pedido.js');
-var usuariosController = require('./controllers/usuarios.js');
-
 // inicializa o express
 var app = express();
 var router = express.Router();//stripe
 
 //socket.io
-// var app = require('express')();
-// var http = require('http').Server(app);
-// var io = require('socket.io')(http);
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+var pedidoController = require('./controllers/pedido.js')(io);
+var usuariosController = require('./controllers/usuarios.js');
 
 // inicializa o body parser
 app.use(bodyParser.json());
@@ -26,27 +25,19 @@ app.use(bodyParser.json());
 app.use(expressMongoDb('mongodb://localhost:27017/contas'));
 app.use(cors());
 
-// inicializa o servidor na porta especificada //comentado pro socket
-app.listen(3001, '0.0.0.0', function() {
-   console.log('Servidor inicializado');
-});
-
-//socket.io
-// io.on('connection', function(socket){
-//   socket.on('add', function(){  //escuta uma funcao com o nome add
-//      socket.emit('add', pedidoController.atualizarQuant) //fazz algo quando escutar essa funcao
-//  });
-//   socket.on('item', function(){  //escuta uma funcao com o nome add
-//      socket.emit('item', pedidoController.pedido) //fazz algo quando escutar essa funcao
-//  });
-//  //  socket.on('fechar', function(){  //escuta uma funcao com o nome add
-//  //     socket.emit('fechar',  pedidoController.fechar) //fazz algo quando escutar essa funcao
-//  // });
+// inicializa o servidor na porta especificada
+// app.listen(3001, '0.0.0.0', function() {
+//    console.log('Servidor inicializado');
 // });
 
-// http.listen(3001, function(){
-//   console.log('listening on *:3001');
-// })
+//socket.io
+io.on('connection', function(socket){
+ console.log('a user connected');
+});
+
+http.listen(3001, function(){ //socket
+  console.log('listening on *:3001');
+})
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -107,5 +98,5 @@ app.put('/contas/fechar/:pin', pedidoController.fechar);
 
 //usuario
 app.post('/usuarios', usuariosController.criarUser);
-// app.get('/all/usuarios', usuariosController.listarUser); //TODO erro ligando o server
+app.get('/all/usuarios', usuariosController.listarUsers);
 app.get('/usuarios', auth, usuariosController.logUser);
