@@ -12,9 +12,12 @@
   "dependencies": {
     "basic-auth": "^1.1.0",
     "body-parser": "^1.17.2",
+    "cors": "^2.8.4",
     "express": "^4.15.3",
     "express-mongo-db": "^2.0.3",
     "mongo-express": "^0.42.0",
-    "mongodb": "^2.2.30"
+    "mongodb": "^2.2.30",
+    "socket.io": "^2.0.3",
+    "stripe": "^4.23.1"
   }
 }

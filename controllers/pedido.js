@@ -36,9 +36,21 @@ exports.criar = function (req, res) {
 
 
 exports.pedido = function (req, res) {
-  var id = req.params.id;
+  var userPin = req.params.pin;
 
-  req.db.collection('contas').update({_id: ObjectID(id)}, { "$push": {pedidos: req.body} }, function(err, result) {
+  req.db.collection('contas').update({"pin": Number(userPin)}, { "$push": {pedidos: req.body} }, function(err, result) {
+    if (err) {
+      return res.sendStatus(503);
+    }
+
+    res.send(result);
+  });
+};
+
+exports.fechar = function (req, res) {
+  var userPin = req.params.pin;
+
+  req.db.collection('contas').update({"pin": Number(userPin)}, { "$set": {fechado: true} }, function(err, result) {
     if (err) {
       return res.sendStatus(503);
     }
@@ -48,10 +60,10 @@ exports.pedido = function (req, res) {
 };
 
 exports.atualizarQuant = function (req, res) {
-  var id = req.params.id;
+   var userPin = req.params.pin;
   var prod = req.params.prod;
 
-  req.db.collection('contas').update({_id: ObjectID(id), "pedidos.nome":prod}, {"$inc": { "pedidos.$.quantidade":1}}, function(err, result) {
+  req.db.collection('contas').update({"pin": Number(userPin), "pedidos.nome":prod}, {"$inc": { "pedidos.$.quantidade":1}}, function(err, result) {
     if (err) {
       return res.sendStatus(503);
     }
