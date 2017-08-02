@@ -19,7 +19,7 @@ var usuariosController = require('./controllers/usuarios.js');
 
 // inicializa o body parser
 app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: false })); //stripe
+app.use(bodyParser.urlencoded({ extended: false })); //stripe
 
 // inicializa mongo e expoe para o express
 app.use(expressMongoDb('mongodb://localhost:27017/contas'));
