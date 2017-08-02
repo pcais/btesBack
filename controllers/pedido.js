@@ -61,6 +61,8 @@ module.exports = function(io){
 
        res.send(result);
      });
+     io.emit('fechar', userPin)
+
    };
 
    pedido.atualizarQuant = function (req, res) {
